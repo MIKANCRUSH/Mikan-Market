@@ -9,6 +9,7 @@ import {
 } from "react-router";
 
 import type { Route } from "./+types/root";
+import { useState } from "react";
 import "./app.css";
 
 export const links: Route.LinksFunction = () => [
@@ -44,30 +45,54 @@ export function Layout({ children }: { children: React.ReactNode }) {
 }
 
 export default function App() {
+  const [isOpen, setIsOpen] = useState(false);
+
   return (
-    <div className="flex min-h-screen">
+    <div className="flex min-h-screen bg-black">
 
-      {/* ================= Sidebar ================= */}
-      <aside className="w-64 bg-black border-r border-white/10 p-6 hidden md:block">
-
-        {/* Logo + Title */}
-        <div className="flex items-center gap-3 mb-10">
+      {/* ================= Mobile Header ================= */}
+      <div className="md:hidden fixed top-0 left-0 right-0 z-50 bg-black border-b border-white/10 flex items-center justify-between p-4">
+        <div className="flex items-center gap-2">
           <img
             src="https://e7.pngegg.com/pngimages/329/550/png-clipart-black-market-black-and-white-hummus-white-text.png"
             alt="Logo"
-            className="w-18 h-18 object-contain invert"
+            className="w-8 h-8 invert"
+          />
+          <span className="font-bold text-lg">Mikan Market</span>
+        </div>
+
+        <button
+          onClick={() => setIsOpen(!isOpen)}
+          className="text-white text-xl"
+        >
+          ☰
+        </button>
+      </div>
+
+      {/* ================= Sidebar ================= */}
+      <aside
+        className={`fixed md:static top-0 left-0 h-full w-64 bg-black border-r border-white/10 p-6 transform transition-transform duration-300 z-40
+        ${isOpen ? "translate-x-0" : "-translate-x-full"}
+        md:translate-x-0`}
+      >
+        {/* Logo Desktop */}
+        <div className="hidden md:flex items-center gap-3 mb-10">
+          <img
+            src="https://e7.pngegg.com/pngimages/329/550/png-clipart-black-market-black-and-white-hummus-white-text.png"
+            alt="Logo"
+            className="w-10 h-10 invert"
           />
           <h1 className="text-2xl font-bold tracking-wide">
             Mikan Market
           </h1>
         </div>
 
-        {/* Navigation */}
-        <nav className="space-y-3">
+        <nav className="space-y-3 mt-10 md:mt-0">
 
           <NavLink
             to="/"
             end
+            onClick={() => setIsOpen(false)}
             className={({ isActive }) =>
               `block px-4 py-2 rounded-lg transition font-medium ${
                 isActive
@@ -81,6 +106,7 @@ export default function App() {
 
           <NavLink
             to="/products"
+            onClick={() => setIsOpen(false)}
             className={({ isActive }) =>
               `block px-4 py-2 rounded-lg transition font-medium ${
                 isActive
@@ -94,6 +120,7 @@ export default function App() {
 
           <NavLink
             to="/sales"
+            onClick={() => setIsOpen(false)}
             className={({ isActive }) =>
               `block px-4 py-2 rounded-lg transition font-medium ${
                 isActive
@@ -108,8 +135,16 @@ export default function App() {
         </nav>
       </aside>
 
+      {/* ================= Overlay Mobile ================= */}
+      {isOpen && (
+        <div
+          className="fixed inset-0 bg-black/50 md:hidden z-30"
+          onClick={() => setIsOpen(false)}
+        />
+      )}
+
       {/* ================= Main Content ================= */}
-      <main className="flex-1 p-6 md:p-10 bg-black">
+      <main className="flex-1 p-6 md:p-10 bg-black w-full pt-20 md:pt-10">
         <Outlet />
       </main>
 
